@@ -1,15 +1,9 @@
 import org.example.Board;
-import org.example.cell.CellX;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoardTest {
-    @Test
-    public void validCellX() {
-        assertDoesNotThrow(() -> new CellX());
-    }
-
     @Test
     public void validBoard() {
         assertDoesNotThrow(() -> new Board(0, 0, 0));
@@ -21,6 +15,8 @@ public class BoardTest {
 
         String actual = exception.getMessage();
         String expected = "Board should have positive numbers of cells.";
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -29,6 +25,8 @@ public class BoardTest {
 
         String actual = exception.getMessage();
         String expected = "Board should have positive numbers of cells.";
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -36,7 +34,9 @@ public class BoardTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(0, 0, -1));
 
         String actual = exception.getMessage();
-        String expected = "Board should have positive numbers of cells.";
+        String expected = "Seeds should be positive.";
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -44,7 +44,9 @@ public class BoardTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(3, 3, 10));
 
         String actual = exception.getMessage();
-        String expected = "Board should have positive numbers of cells.";
+        String expected = "Seeds should not exceed the total cells.";
+
+        assertEquals(expected, actual);
     }
 
 
@@ -64,6 +66,17 @@ public class BoardTest {
 
         int actual = board.getEmptyCells();
         int expected = 7;
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void playGame() {
+        Board board = new Board(3, 3, 2);
+        board.play();
+
+        int actual = board.getEmptyCells();
+        int expected = 9;
 
         assertEquals(expected, actual);
     }
