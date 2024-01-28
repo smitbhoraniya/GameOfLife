@@ -1,12 +1,10 @@
 package org.example;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Board {
-    private String[][] board;
+    private int[][] board;
     private final int row;
     private final int column;
     private final int seeds;
@@ -21,23 +19,25 @@ public class Board {
         if (row * column < seeds) {
             throw new IllegalArgumentException("Seeds should not exceed the total cells.");
         }
+
         this.row = row;
         this.column = column;
-        this.board = new String[row][column];
+        this.board = new int[row][column];
         this.seeds = seeds;
-        initBoard();
+        initialAliveCells();
     }
 
-    private void initBoard() {
+    private void initialAliveCells() {
         int populatedSeed = 0;
-
         Random random = new Random();
+
         while (populatedSeed != this.seeds) {
             int rowIndex = random.nextInt(0, this.row);
             int columnIndex = random.nextInt(0, this.column);
 
-            if (board[rowIndex][columnIndex] == null) {
-                board[rowIndex][columnIndex] = "X";
+            // Cell should be null.
+            if (board[rowIndex][columnIndex] == 0) {
+                board[rowIndex][columnIndex] = 1;
                 populatedSeed++;
             }
         }
@@ -45,9 +45,10 @@ public class Board {
 
     public int getEmptyCells() {
         int count = 0;
-        for (String[] cells : board) {
-            for (String cell: cells) {
-                if (cell == null) {
+
+        for (int[] cells : board) {
+            for (int cell: cells) {
+                if (cell == 0) {
                     count++;
                 }
             }
@@ -56,23 +57,31 @@ public class Board {
         return count;
     }
 
-    public void play() {
+    public void play() throws Exception {
         int iteration = 0;
+
+        // while there should not be any alive cell.
         while(getEmptyCells() != row * column) {
+            printBoard(iteration);
+
+            int[][] nextBoard = calculateNextBoardState();
+            if (Arrays.deepEquals(this.board, nextBoard)) {
+                throw new Exception("Next Generation is not possible.");
+            }
+            this.board = nextBoard;
+
             iteration++;
-            System.out.println("Iteration count: " + iteration);
-            printBoard();
-            nextPlay();
-            System.out.println();
-            System.out.println();
         }
-        iteration++;
-        System.out.println("Iteration count: " + iteration);
-        printBoard();
+
+        printBoard(iteration);
     }
 
-    private void nextPlay() {
-        List<Point2D> populatedCells = new ArrayList<>();
+    // neighbors 1: Make cell dead because of solitude.
+    // neighbors 4: Make cell dead because of overpopulation.
+    // neighbors 3: Make cell alive.
+    // neighbors 2: Cell will survive.
+    private int[][] calculateNextBoardState() {
+        int[][] newBoard = new int[row][column];
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
@@ -80,75 +89,50 @@ public class Board {
                 if (neighbors <= 1 || neighbors >= 4) {
                     continue;
                 }
-                if (neighbors == 3 || (neighbors == 2 && board[i][j] != null)) {
-                    populatedCells.add(new Point2D.Double(i, j));
+                if (neighbors == 3 || board[i][j] == 1) {
+                    newBoard[i][j] = 1;
                 }
             }
         }
 
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
-                board[i][j] = null;
-            }
-        }
-
-        for (Point2D point: populatedCells) {
-            board[(int) point.getX()][(int) point.getY()] = "X";
-        }
+        return newBoard;
     }
 
-    private int neighborsCount(int i, int j) {
+    private int neighborsCount(int x, int y) {
         int count = 0;
 
-        if (i - 1 >= 0 && i - 1 < this.row && j - 1 >= 0 && j - 1 < this.column && this.board[i - 1][j - 1] != null) {
-            count++;
-        }
-        if (i - 1 >= 0 && i - 1 < this.row && j >= 0 && j < this.column && this.board[i - 1][j] != null) {
-            count++;
-        }
-        if (i - 1 >= 0 && i - 1 < this.row && j + 1 >= 0 && j + 1 < this.column && this.board[i - 1][j + 1] != null) {
-            count++;
-        }
-        if (i >= 0 && i < this.row && j - 1 >= 0 && j - 1 < this.column && this.board[i][j - 1] != null) {
-            count++;
-        }
-        if (i >= 0 && i < this.row && j + 1 >= 0 && j + 1 < this.column && this.board[i][j + 1] != null) {
-            count++;
-        }
-        if (i + 1 >= 0 && i + 1 < this.row && j - 1 >= 0 && j - 1 < this.column && this.board[i + 1][j - 1] != null) {
-            count++;
-        }
-        if (i + 1 >= 0 && i + 1 < this.row && j >= 0 && j < this.column && this.board[i + 1][j] != null) {
-            count++;
-        }
-        if (i + 1 >= 0 && i + 1 < this.row && j + 1 >= 0 && j + 1 < this.column && this.board[i + 1][j + 1] != null) {
-            count++;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+
+                int neighborRow = x + i;
+                int neighborColumn = y + j;
+
+                if (isValidPosition(neighborRow, neighborColumn) && board[neighborRow][neighborColumn] == 1) {
+                    count++;
+                }
+            }
         }
 
         return count;
     }
 
-    private void printBoard() {
+    private void printBoard(int iteration) {
+        System.out.println("iteration count: " + iteration);
+
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                if (board[i][j] != null) {
-                    System.out.print(board[i][j]);
-                }
-                else {
-                    System.out.print(" ");
-                }
-
-                if (j != column - 1) {
-                    System.out.print("|");
-                }
-            }
-            if (i != row - 1) {
-                System.out.println();
-                for (int j = 0; j < column; j++) {
-                    System.out.print("__");
-                }
+                System.out.print(board[i][j] == 1 ? "⦿ " : "○ ");
             }
             System.out.println();
         }
+
+        System.out.println("\n\n");
+    }
+
+    private boolean isValidPosition(int row, int column) {
+        return row >= 0 && row < this.row && column >= 0 && column < this.column;
     }
 }

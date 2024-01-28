@@ -10,6 +10,48 @@ public class BoardTest {
     }
 
     @Test
+    public void getFreeCells() {
+        Board board = new Board(3, 3, 0);
+
+        int actual = board.getEmptyCells();
+        int expected = 9;
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void getFreeCellsWithSeeds() {
+        Board board = new Board(3, 3, 2);
+
+        int actual = board.getEmptyCells();
+        int expected = 7;
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void playGame() throws Exception {
+        Board board = new Board(3, 3, 2);
+        board.play();
+
+        int actual = board.getEmptyCells();
+        int expected = 9;
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nextGenerationNotPossible() throws Exception {
+        Board board = new Board(2, 2, 4);
+        Exception exception = assertThrows(Exception.class, board::play);
+
+        String actual = exception.getMessage();
+        String expected = "Next Generation is not possible.";
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void NegativeRow() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(-1, 0, 0));
 
@@ -45,38 +87,6 @@ public class BoardTest {
 
         String actual = exception.getMessage();
         String expected = "Seeds should not exceed the total cells.";
-
-        assertEquals(expected, actual);
-    }
-
-
-    @Test
-    public void getFreeCells() {
-        Board board = new Board(3, 3, 0);
-
-        int actual = board.getEmptyCells();
-        int expected = 9;
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void getFreeCellsWithSeeds() {
-        Board board = new Board(3, 3, 2);
-
-        int actual = board.getEmptyCells();
-        int expected = 7;
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void playGame() {
-        Board board = new Board(3, 3, 2);
-        board.play();
-
-        int actual = board.getEmptyCells();
-        int expected = 9;
 
         assertEquals(expected, actual);
     }
