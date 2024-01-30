@@ -100,7 +100,7 @@ public class Board {
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                int neighbors = neighborsCount(i, j);
+                int neighbors = board[i][j].neighborsCount(board);
                 if (neighbors <= 1 || neighbors >= 4) {
                     newBoard[i][j] = new Cell(i, j, CellType.DEAD);
                 }
@@ -116,26 +116,26 @@ public class Board {
         return newBoard;
     }
 
-    private int neighborsCount(int x, int y) {
-        int count = 0;
-
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-
-                int neighborRow = x + i;
-                int neighborColumn = y + j;
-
-                if (isValidPosition(neighborRow, neighborColumn) && board[neighborRow][neighborColumn].isAlive()) {
-                    count++;
-                }
-            }
-        }
-
-        return count;
-    }
+//    private int neighborsCount(int x, int y) {
+//        int count = 0;
+//
+//        for (int i = -1; i <= 1; i++) {
+//            for (int j = -1; j <= 1; j++) {
+//                if (i == 0 && j == 0) {
+//                    continue;
+//                }
+//
+//                int neighborRow = x + i;
+//                int neighborColumn = y + j;
+//
+//                if (isValidPosition(neighborRow, neighborColumn) && board[neighborRow][neighborColumn].isAlive()) {
+//                    count++;
+//                }
+//            }
+//        }
+//
+//        return count;
+//    }
 
     private void printBoard(int iteration) {
         System.out.println("iteration count: " + iteration);
@@ -150,7 +150,5 @@ public class Board {
         System.out.println("\n\n");
     }
 
-    private boolean isValidPosition(int row, int column) {
-        return row >= 0 && row < this.row && column >= 0 && column < this.column;
-    }
+
 }
