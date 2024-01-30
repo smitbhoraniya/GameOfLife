@@ -3,7 +3,6 @@ package org.example;
 import org.example.cell.Cell;
 import org.example.cell.CellType;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class Board {
@@ -71,14 +70,9 @@ public class Board {
     public void play() throws Exception {
         int iteration = 0;
 
-        // while there should not be any alive cell.
         while(getEmptyCells() != row * column) {
             printBoard(iteration);
 
-            // if next state is same as current state,
-            // then it would lead to the infinite state generation.
-            // for that we are checking next state and current state
-            // and if both are same then throw an exception.
             Cell[][] nextBoardState = calculateNextBoardState();
             if (this.board == nextBoardState) {
                 throw new Exception("Next Generation is not possible.");
@@ -91,51 +85,17 @@ public class Board {
         printBoard(iteration);
     }
 
-    // neighbors 1: Make cell dead because of solitude.
-    // neighbors 4: Make cell dead because of overpopulation.
-    // neighbors 3: Make cell alive.
-    // neighbors 2: Cell will survive.
     private Cell[][] calculateNextBoardState() {
         Cell[][] newBoard = new Cell[row][column];
 
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                int neighbors = board[i][j].neighborsCount(board);
-                if (neighbors <= 1 || neighbors >= 4) {
-                    newBoard[i][j] = new Cell(i, j, CellType.DEAD);
-                }
-                else if (neighbors == 3 || board[i][j].isAlive()) {
-                    newBoard[i][j] = new Cell(i, j, CellType.ALIVE);
-                }
-                else {
-                    newBoard[i][j] = new Cell(i, j, CellType.DEAD);
-                }
+                newBoard[i][j] = board[i][j].evolve(board);
             }
         }
 
         return newBoard;
     }
-
-//    private int neighborsCount(int x, int y) {
-//        int count = 0;
-//
-//        for (int i = -1; i <= 1; i++) {
-//            for (int j = -1; j <= 1; j++) {
-//                if (i == 0 && j == 0) {
-//                    continue;
-//                }
-//
-//                int neighborRow = x + i;
-//                int neighborColumn = y + j;
-//
-//                if (isValidPosition(neighborRow, neighborColumn) && board[neighborRow][neighborColumn].isAlive()) {
-//                    count++;
-//                }
-//            }
-//        }
-//
-//        return count;
-//    }
 
     private void printBoard(int iteration) {
         System.out.println("iteration count: " + iteration);
@@ -146,9 +106,6 @@ public class Board {
             }
             System.out.println();
         }
-
         System.out.println("\n\n");
     }
-
-
 }
