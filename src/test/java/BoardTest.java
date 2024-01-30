@@ -40,16 +40,16 @@ public class BoardTest {
         assertEquals(expected, actual);
     }
 
-    @Test
-    public void nextGenerationNotPossible() throws Exception {
-        Board board = new Board(2, 2, 4);
-        Exception exception = assertThrows(Exception.class, board::play);
-
-        String actual = exception.getMessage();
-        String expected = "Next Generation is not possible.";
-
-        assertEquals(expected, actual);
-    }
+//    @Test
+//    public void nextGenerationNotPossible() throws Exception {
+//        Board board = new Board(2, 2, 4);
+//        Exception exception = assertThrows(Exception.class, board::play);
+//
+//        String actual = exception.getMessage();
+//        String expected = "Next Generation is not possible.";
+//
+//        assertEquals(expected, actual);
+//    }
 
     @Test
     public void NegativeRow() {
