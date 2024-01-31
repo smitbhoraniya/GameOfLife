@@ -3,6 +3,7 @@ package org.example;
 import org.example.cell.Cell;
 import org.example.cell.CellType;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Board {
@@ -74,7 +75,7 @@ public class Board {
             printBoard(iteration);
 
             Cell[][] nextBoardState = calculateNextBoardState();
-            if (this.board == nextBoardState) {
+            if (Arrays.deepEquals(this.board, nextBoardState)) {
                 throw new Exception("Next Generation is not possible.");
             }
             this.board = nextBoardState;

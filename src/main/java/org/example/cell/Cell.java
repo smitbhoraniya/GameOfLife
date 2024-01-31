@@ -3,6 +3,7 @@ package org.example.cell;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 public class Cell {
@@ -17,7 +18,7 @@ public class Cell {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.neighbour = new ArrayList<>(8);
+        this.neighbour = new ArrayList<>();
         IntStream.rangeClosed(-1, 1)
                 .boxed()
                 .flatMap(i -> IntStream.rangeClosed(-1, 1)
@@ -34,7 +35,7 @@ public class Cell {
         for (Point2D point: neighbour) {
             int x = (int) point.getX();
             int y = (int) point.getY();
-            if (isValidPosition(x, y, board.length, board[0].length) && board[x][y].isAlive()) {
+            if (isValidPosition(x, y, board.length, board[0].length) && board[x][y].isAlive() && !(this.x == x && this.y == y)) {
                 count++;
             }
         }
@@ -52,5 +53,22 @@ public class Cell {
 
     private boolean isValidPosition(int x, int y, int row, int column) {
         return x >= 0 && x < row && y >= 0 && y < column;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Cell c)) {
+            return false;
+        }
+        return c.x == this.x && c.y == this.y && c.type == this.type;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash("" + this.x + this.y + this.type);
     }
 }
