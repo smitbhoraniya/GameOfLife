@@ -22,8 +22,8 @@ public class IOInterface {
             }
             else if (typeOfPlaying == 0) {
                 while (board.getDeadCells() != row * column) {
-                    board.printBoard();
-                    board.calculateNextCellGridState();
+                    board.print();
+                    board.calculateNextBoardState();
                     System.out.print("Enter any number for get next state: ");
                     myObj.nextInt();
                 }

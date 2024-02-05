@@ -82,7 +82,7 @@ public class Board {
         return count;
     }
 
-    public void calculateNextCellGridState() throws GenerationNotPossible {
+    public void calculateNextBoardState() throws NextGenerationNotPossible {
         Cell[][] newCellGrid = new Cell[this.row][this.column];
 
         for (int i = 0; i < this.row; i++) {
@@ -93,28 +93,28 @@ public class Board {
         }
 
         if (Arrays.deepEquals(this.cellGrid, newCellGrid)) {
-            throw new GenerationNotPossible("Next Generation is not possible.");
+            throw new NextGenerationNotPossible("Next Generation is not possible.");
         }
         this.cellGrid = newCellGrid;
     }
 
-    public void play() throws GenerationNotPossible {
+    public void play() throws NextGenerationNotPossible {
         int iteration = 0;
 
         while(getDeadCells() != row * column) {
             System.out.println("iteration count: " + iteration);
-            this.printBoard();
+            this.print();
 
-            this.calculateNextCellGridState();
+            this.calculateNextBoardState();
 
             iteration++;
         }
 
         System.out.println("iteration count: " + iteration);
-        this.printBoard();
+        this.print();
     }
 
-    public void printBoard() {
+    public void print() {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
                 System.out.print(cellGrid[i][j].isAlive() ? CellType.ALIVE.getValue() + " " : CellType.DEAD.getValue() + " ");

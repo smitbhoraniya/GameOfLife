@@ -1,5 +1,5 @@
 import org.example.Board;
-import org.example.GenerationNotPossible;
+import org.example.NextGenerationNotPossible;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,10 +31,10 @@ public class BoardTest {
     }
 
     @Test
-    public void evolveCellGridWithOneSeed() throws GenerationNotPossible {
+    public void evolveBoardWithOneSeed() throws NextGenerationNotPossible {
         Board board = new Board(2, 2, 1);
 
-        board.calculateNextCellGridState();
+        board.calculateNextBoardState();
 
         int actual = board.getDeadCells();
         int expected = 4;
@@ -42,10 +42,10 @@ public class BoardTest {
     }
 
     @Test
-    public void evolveCellGridWithTwoSeed() throws GenerationNotPossible {
+    public void evolveBoardWithTwoSeed() throws NextGenerationNotPossible {
         Board board = new Board(2, 2, 2);
 
-        board.calculateNextCellGridState();
+        board.calculateNextBoardState();
 
         int actual = board.getDeadCells();
         int expected = 4;
@@ -53,10 +53,10 @@ public class BoardTest {
     }
 
     @Test
-    public void evolveCellGridWithThreeSeed() throws GenerationNotPossible {
+    public void evolveBoardWithThreeSeed() throws NextGenerationNotPossible {
         Board board = new Board(2, 2, 3);
 
-        board.calculateNextCellGridState();
+        board.calculateNextBoardState();
 
         int actual = board.getDeadCells();
         int expected = 0;
@@ -64,7 +64,7 @@ public class BoardTest {
     }
 
     @Test
-    public void endOfGameAllCellShouldBeDead() throws Exception {
+    public void endOfGameAllCellsShouldBeDead() throws Exception {
         Board board = new Board(3, 3, 2);
         board.play();
 
@@ -98,6 +98,6 @@ public class BoardTest {
     public void nextGenerationNotPossible() {
         Board board = new Board(2, 2, 4);
 
-        assertThrows(GenerationNotPossible.class, board::play);
+        assertThrows(NextGenerationNotPossible.class, board::play);
     }
 }
