@@ -1,4 +1,5 @@
 import org.example.Board;
+import org.example.GenerationNotPossible;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,84 +11,93 @@ public class BoardTest {
     }
 
     @Test
-    public void getFreeCells() {
+    public void boardShouldHaveAllDeadCellWithoutSeeds() {
         Board board = new Board(3, 3, 0);
 
-        int actual = board.getEmptyCells();
+        int actual = board.getDeadCells();
         int expected = 9;
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void getFreeCellsWithSeeds() {
+    public void getDeadCellsWithSeeds() {
         Board board = new Board(3, 3, 2);
 
-        int actual = board.getEmptyCells();
+        int actual = board.getDeadCells();
         int expected = 7;
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void playGame() throws Exception {
+    public void evolveCellGridWithOneSeed() throws GenerationNotPossible {
+        Board board = new Board(2, 2, 1);
+
+        board.calculateNextCellGridState();
+
+        int actual = board.getDeadCells();
+        int expected = 4;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellGridWithTwoSeed() throws GenerationNotPossible {
+        Board board = new Board(2, 2, 2);
+
+        board.calculateNextCellGridState();
+
+        int actual = board.getDeadCells();
+        int expected = 4;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellGridWithThreeSeed() throws GenerationNotPossible {
+        Board board = new Board(2, 2, 3);
+
+        board.calculateNextCellGridState();
+
+        int actual = board.getDeadCells();
+        int expected = 0;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void endOfGameAllCellShouldBeDead() throws Exception {
         Board board = new Board(3, 3, 2);
         board.play();
 
-        int actual = board.getEmptyCells();
+        int actual = board.getDeadCells();
         int expected = 9;
 
         assertEquals(expected, actual);
     }
 
     @Test
-    public void nextGenerationNotPossible() throws Exception {
-        Board board = new Board(2, 2, 4);
-        Exception exception = assertThrows(Exception.class, board::play);
-
-        String actual = exception.getMessage();
-        String expected = "Next Generation is not possible.";
-
-        assertEquals(expected, actual);
+    public void negativeRowInBoard() {
+        assertThrows(IllegalArgumentException.class, () -> new Board(-1, 0, 0));
     }
 
     @Test
-    public void NegativeRow() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(-1, 0, 0));
-
-        String actual = exception.getMessage();
-        String expected = "Board should have positive numbers of cells.";
-
-        assertEquals(expected, actual);
+    public void negativeColumnInBoard() {
+        assertThrows(IllegalArgumentException.class, () -> new Board(0, -1, 0));
     }
 
     @Test
-    public void negativeColumn() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(0, -1, 0));
-
-        String actual = exception.getMessage();
-        String expected = "Board should have positive numbers of cells.";
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void negativeSeeds() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(0, 0, -1));
-
-        String actual = exception.getMessage();
-        String expected = "Seeds should be positive.";
-
-        assertEquals(expected, actual);
+    public void negativeSeedsInBoard() {
+        assertThrows(IllegalArgumentException.class, () -> new Board(0, 0, -1));
     }
 
     @Test
     public void seedsExceedTotalCells() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new Board(3, 3, 10));
+        assertThrows(IllegalArgumentException.class, () -> new Board(3, 3, 10));
+    }
 
-        String actual = exception.getMessage();
-        String expected = "Seeds should not exceed the total cells.";
+    @Test
+    public void nextGenerationNotPossible() {
+        Board board = new Board(2, 2, 4);
 
-        assertEquals(expected, actual);
+        assertThrows(GenerationNotPossible.class, board::play);
     }
 }

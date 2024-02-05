@@ -7,11 +7,9 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Board {
-    private Cell[][] board;
+    private Cell[][] cellGrid;
     private final int row;
     private final int column;
-    private final int seeds;
-
     public Board(int row, int column, int seeds) {
         if (row < 0 || column < 0) {
             throw new IllegalArgumentException("Board should have positive numbers of cells.");
@@ -22,42 +20,40 @@ public class Board {
         if (row * column < seeds) {
             throw new IllegalArgumentException("Seeds should not exceed the total cells.");
         }
-
+        this.cellGrid = new Cell[row][column];
         this.row = row;
         this.column = column;
-        this.board = new Cell[row][column];
-        this.seeds = seeds;
         initializeDefaultCells();
-        initialAliveCells();
+        initialAliveCells(seeds);
     }
 
     private void initializeDefaultCells() {
         for (int i = 0; i < this.row; i++) {
             for (int j = 0; j < this.column; j++) {
-                this.board[i][j] = new Cell(i, j, CellType.DEAD);
+                this.cellGrid[i][j] = new Cell(CellType.DEAD);
             }
         }
     }
 
-    private void initialAliveCells() {
+    private void initialAliveCells(int seeds) {
         int populatedSeed = 0;
         Random random = new Random();
 
-        while (populatedSeed != this.seeds) {
+        while (populatedSeed != seeds) {
             int rowIndex = random.nextInt(0, this.row);
             int columnIndex = random.nextInt(0, this.column);
 
-            if (!board[rowIndex][columnIndex].isAlive()) {
-                board[rowIndex][columnIndex] = new Cell(rowIndex, columnIndex, CellType.ALIVE);
+            if (!cellGrid[rowIndex][columnIndex].isAlive()) {
+                cellGrid[rowIndex][columnIndex] = new Cell(CellType.ALIVE);
                 populatedSeed++;
             }
         }
     }
 
-    public int getEmptyCells() {
+    public int getDeadCells() {
         int count = 0;
 
-        for (Cell[] cells : board) {
+        for (Cell[] cells : this.cellGrid) {
             for (Cell cell: cells) {
                 if (!cell.isAlive()) {
                     count++;
@@ -68,42 +64,60 @@ public class Board {
         return count;
     }
 
-    public void play() throws Exception {
+    private int neighborsCount(int row, int column) {
+        int count = 0;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int x = row + i;
+                int y = column + j;
+                if (i == 0 && j == 0) {
+                    continue;
+                }
+                if (x >= 0 && x < this.row && y >= 0 && y < this.column && cellGrid[x][y].isAlive()) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public void calculateNextCellGridState() throws GenerationNotPossible {
+        Cell[][] newCellGrid = new Cell[this.row][this.column];
+
+        for (int i = 0; i < this.row; i++) {
+            for (int j = 0; j < this.column; j++) {
+                int liveNeighbours = neighborsCount(i, j);
+                newCellGrid[i][j] = cellGrid[i][j].evolve(liveNeighbours);
+            }
+        }
+
+        if (Arrays.deepEquals(this.cellGrid, newCellGrid)) {
+            throw new GenerationNotPossible("Next Generation is not possible.");
+        }
+        this.cellGrid = newCellGrid;
+    }
+
+    public void play() throws GenerationNotPossible {
         int iteration = 0;
 
-        while(getEmptyCells() != row * column) {
-            printBoard(iteration);
+        while(getDeadCells() != row * column) {
+            System.out.println("iteration count: " + iteration);
+            this.printBoard();
 
-            Cell[][] nextBoardState = calculateNextBoardState();
-            if (Arrays.deepEquals(this.board, nextBoardState)) {
-                throw new Exception("Next Generation is not possible.");
-            }
-            this.board = nextBoardState;
+            this.calculateNextCellGridState();
 
             iteration++;
         }
 
-        printBoard(iteration);
-    }
-
-    private Cell[][] calculateNextBoardState() {
-        Cell[][] newBoard = new Cell[row][column];
-
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
-                newBoard[i][j] = board[i][j].evolve(board);
-            }
-        }
-
-        return newBoard;
-    }
-
-    private void printBoard(int iteration) {
         System.out.println("iteration count: " + iteration);
+        this.printBoard();
+    }
 
+    public void printBoard() {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                System.out.print(board[i][j].isAlive() ? "⦿ " : "○ ");
+                System.out.print(cellGrid[i][j].isAlive() ? CellType.ALIVE.getValue() + " " : CellType.DEAD.getValue() + " ");
             }
             System.out.println();
         }

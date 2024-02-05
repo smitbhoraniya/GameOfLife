@@ -7,78 +7,139 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CellTest {
     @Test
     public void validCell() {
-        assertDoesNotThrow(() -> new Cell(0, 0 , CellType.ALIVE));
+        assertDoesNotThrow(() -> new Cell(CellType.ALIVE));
     }
 
     @Test
-    public void inValidCell() {
-        assertThrows(IllegalArgumentException.class, () -> new Cell(-1, 0, CellType.ALIVE));
+    public void checkCellIsAlve() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        assertTrue(cell.isAlive());
     }
 
     @Test
-    public void evolveCellWithOneNeighbor() {
-        Cell[][] board = new Cell[2][2];
-        board[0][0] = new Cell(0, 0, CellType.ALIVE);
-        board[0][1] = new Cell(0, 1, CellType.ALIVE);
-        board[1][0] = new Cell(1, 0, CellType.DEAD);
-        board[1][1] = new Cell(1, 1, CellType.DEAD);
+    public void evolveCellWithZeroNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
 
-        Cell newCell = board[0][0].evolve(board);
-
-        assertFalse(newCell.isAlive());
+        boolean actual = cell.evolve(0).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void evolveCellWithTwoNeighborsAndCellShouldBeAlive() {
-        Cell[][] board = new Cell[2][2];
-        board[0][0] = new Cell(0, 0, CellType.ALIVE);
-        board[0][1] = new Cell(0, 1, CellType.ALIVE);
-        board[1][0] = new Cell(1, 0, CellType.ALIVE);
-        board[1][1] = new Cell(1, 1, CellType.DEAD);
+    public void evolveCellWithZeroNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
 
-        Cell newCell = board[0][0].evolve(board);
-
-        assertTrue(newCell.isAlive());
+        boolean actual = cell.evolve(0).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void evolveCellWithTwoNeighborsAndCellShouldBeDead() {
-        Cell[][] board = new Cell[2][2];
-        board[0][0] = new Cell(0, 0, CellType.DEAD);
-        board[0][1] = new Cell(0, 1, CellType.ALIVE);
-        board[1][0] = new Cell(1, 0, CellType.ALIVE);
-        board[1][1] = new Cell(1, 1, CellType.DEAD);
+    public void evolveCellWithOneNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
 
-        Cell newCell = board[0][0].evolve(board);
-
-        assertFalse(newCell.isAlive());
+        boolean actual = cell.evolve(1).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void evolveCellWithThreeNeighborAndCellShouldBeAlive() {
-        Cell[][] board = new Cell[2][2];
-        board[0][0] = new Cell(0, 0, CellType.DEAD);
-        board[0][1] = new Cell(0, 1, CellType.ALIVE);
-        board[1][0] = new Cell(1, 0, CellType.ALIVE);
-        board[1][1] = new Cell(1, 1, CellType.ALIVE);
+    public void evolveCellWithOneNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
 
-        Cell newCell = board[0][0].evolve(board);
-
-        assertTrue(newCell.isAlive());
+        boolean actual = cell.evolve(1).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
     }
 
     @Test
-    public void evolveCellWithFourNeighbor() {
-        Cell[][] board = new Cell[2][3];
-        board[0][0] = new Cell(0, 0, CellType.ALIVE);
-        board[0][1] = new Cell(0, 1, CellType.ALIVE);
-        board[1][0] = new Cell(1, 0, CellType.ALIVE);
-        board[1][1] = new Cell(1, 1, CellType.ALIVE);
-        board[1][2] = new Cell(1, 2, CellType.ALIVE);
-        board[0][2] = new Cell(0, 2, CellType.DEAD);
+    public void evolveCellWithTwoNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
 
-        Cell newCell = board[1][1].evolve(board);
+        boolean actual = cell.evolve(2).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
 
-        assertFalse(newCell.isAlive());
+    @Test
+    public void evolveCellWithTwoNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        boolean actual = cell.evolve(2).isAlive();
+        boolean expected = true;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithThreeNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
+
+        boolean actual = cell.evolve(3).isAlive();
+        boolean expected = true;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithThreeNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        boolean actual = cell.evolve(3).isAlive();
+        boolean expected = true;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithFourNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
+
+        boolean actual = cell.evolve(4).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithFourNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        boolean actual = cell.evolve(4).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithGreaterThanFourNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
+
+        boolean actual = cell.evolve(10).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithGreaterThanFourNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        boolean actual = cell.evolve(10).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithLessThanZeroNeighboursWhenCellIsDead() {
+        Cell cell = new Cell(CellType.DEAD);
+
+        boolean actual = cell.evolve(-1).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void evolveCellWithLessThanZeroNeighboursWhenCellIsAlive() {
+        Cell cell = new Cell(CellType.ALIVE);
+
+        boolean actual = cell.evolve(-1).isAlive();
+        boolean expected = false;
+        assertEquals(expected, actual);
     }
 }
