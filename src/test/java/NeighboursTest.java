@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NeighboursTest {
     @Test
@@ -35,5 +36,15 @@ public class NeighboursTest {
             add(new Point2D.Double(1, 1));
         }};
         assertEquals(expectedNeighbours, neighbours);
+    }
+
+    @Test
+    public void coordinateAreNegative() {
+        assertThrows(IllegalArgumentException.class, () -> new Neighbours(-5, 5, 10, 10));
+    }
+
+    @Test
+    public void coordinateCrossTheBoundary() {
+        assertThrows(IllegalArgumentException.class, () -> new Neighbours(10, 10, 5, 5));
     }
 }

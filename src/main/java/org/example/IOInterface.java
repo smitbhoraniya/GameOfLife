@@ -3,7 +3,10 @@ package org.example;
 import java.util.Scanner;
 
 public class IOInterface {
-    public void playGame() {
+    public static void main(String[] args) {
+        IOInterface.playGame();
+    }
+    private static void playGame() {
         Scanner myObj = new Scanner(System.in);
         System.out.print("Enter number of row: ");
         int row = myObj.nextInt();
