@@ -3,11 +3,13 @@ package org.example;
 import org.example.cell.Cell;
 import org.example.cell.CellType;
 
+import java.awt.geom.Point2D;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Board {
-    private Cell[][] cellGrid;
+    private Cell[][] board;
     private final int row;
     private final int column;
     public Board(int row, int column, int seeds) {
@@ -20,7 +22,7 @@ public class Board {
         if (row * column < seeds) {
             throw new IllegalArgumentException("Seeds should not exceed the total cells.");
         }
-        this.cellGrid = new Cell[row][column];
+        this.board = new Cell[row][column];
         this.row = row;
         this.column = column;
         initializeDefaultCells();
@@ -30,7 +32,7 @@ public class Board {
     private void initializeDefaultCells() {
         for (int i = 0; i < this.row; i++) {
             for (int j = 0; j < this.column; j++) {
-                this.cellGrid[i][j] = new Cell(CellType.DEAD);
+                this.board[i][j] = new Cell(CellType.DEAD);
             }
         }
     }
@@ -43,8 +45,8 @@ public class Board {
             int rowIndex = random.nextInt(0, this.row);
             int columnIndex = random.nextInt(0, this.column);
 
-            if (!cellGrid[rowIndex][columnIndex].isAlive()) {
-                cellGrid[rowIndex][columnIndex] = new Cell(CellType.ALIVE);
+            if (!board[rowIndex][columnIndex].isAlive()) {
+                board[rowIndex][columnIndex] = new Cell(CellType.ALIVE);
                 populatedSeed++;
             }
         }
@@ -53,7 +55,7 @@ public class Board {
     public int getDeadCells() {
         int count = 0;
 
-        for (Cell[] cells : this.cellGrid) {
+        for (Cell[] cells : this.board) {
             for (Cell cell: cells) {
                 if (!cell.isAlive()) {
                     count++;
@@ -64,60 +66,33 @@ public class Board {
         return count;
     }
 
-    private int neighborsCount(int row, int column) {
-        int count = 0;
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                int x = row + i;
-                int y = column + j;
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-                if (x >= 0 && x < this.row && y >= 0 && y < this.column && cellGrid[x][y].isAlive()) {
-                    count++;
-                }
-            }
-        }
-
-        return count;
+    public int totalCells() {
+        return this.row * this.column;
     }
 
-    public void calculateNextBoardState() throws NextGenerationNotPossible {
-        Cell[][] newCellGrid = new Cell[this.row][this.column];
+    public void generateNextBoardState() throws NextGenerationNotPossibleException {
+        Cell[][] newBoard = new Cell[this.row][this.column];
 
         for (int i = 0; i < this.row; i++) {
             for (int j = 0; j < this.column; j++) {
-                int liveNeighbours = neighborsCount(i, j);
-                newCellGrid[i][j] = cellGrid[i][j].evolve(liveNeighbours);
+                List<Point2D> neighbours = new Neighbours(i, j, this.row, this.column).neighboursCoordinates;
+                int liveNeighbours = (int) neighbours.stream()
+                        .map(coordinates -> board[(int) coordinates.getX()][(int) coordinates.getY()])
+                        .filter(Cell::isAlive).count();
+                newBoard[i][j] = board[i][j].evolve(liveNeighbours);
             }
         }
 
-        if (Arrays.deepEquals(this.cellGrid, newCellGrid)) {
-            throw new NextGenerationNotPossible("Next Generation is not possible.");
+        if (Arrays.deepEquals(this.board, newBoard)) {
+            throw new NextGenerationNotPossibleException("Next Generation is not possible.");
         }
-        this.cellGrid = newCellGrid;
-    }
-
-    public void play() throws NextGenerationNotPossible {
-        int iteration = 0;
-
-        while(getDeadCells() != row * column) {
-            System.out.println("iteration count: " + iteration);
-            this.print();
-
-            this.calculateNextBoardState();
-
-            iteration++;
-        }
-
-        System.out.println("iteration count: " + iteration);
-        this.print();
+        this.board = newBoard;
     }
 
     public void print() {
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < column; j++) {
-                System.out.print(cellGrid[i][j].isAlive() ? CellType.ALIVE.getValue() + " " : CellType.DEAD.getValue() + " ");
+                System.out.print(board[i][j].isAlive() ? CellType.ALIVE.getValue() + " " : CellType.DEAD.getValue() + " ");
             }
             System.out.println();
         }
