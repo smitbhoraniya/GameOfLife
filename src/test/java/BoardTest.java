@@ -16,7 +16,6 @@ public class BoardTest {
 
         int actual = board.getDeadCells();
         int expected = 9;
-
         assertEquals(expected, actual);
     }
 
@@ -26,7 +25,6 @@ public class BoardTest {
 
         int actual = board.getDeadCells();
         int expected = 7;
-
         assertEquals(expected, actual);
     }
 
@@ -70,7 +68,36 @@ public class BoardTest {
 
         int actual = board.getDeadCells();
         int expected = 9;
+        assertEquals(expected, actual);
+    }
 
+    @Test
+    public void nextBoardStateWithOneSeed() throws NextGenerationNotPossible {
+        Board board = new Board(2, 2, 1);
+        board.calculateNextBoardState();
+
+        int actual = board.getDeadCells();
+        int expected = 4;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nextBoardStateWithTwoSeed() throws NextGenerationNotPossible {
+        Board board = new Board(2, 2, 2);
+        board.calculateNextBoardState();
+
+        int actual = board.getDeadCells();
+        int expected = 4;
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void nextBoardStateWithThreeSeed() throws NextGenerationNotPossible {
+        Board board = new Board(2, 2, 3);
+        board.calculateNextBoardState();
+
+        int actual = board.getDeadCells();
+        int expected = 0;
         assertEquals(expected, actual);
     }
 
